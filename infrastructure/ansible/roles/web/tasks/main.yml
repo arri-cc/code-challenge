@@ -14,10 +14,10 @@
 - name: Ensure required app server packages are installed
   yum:
     name:
-      - dotnet-sdk-2.1
+      - dotnet-sdk-2.1-2.1.403-1
       - aspnetcore-runtime-2.1-2.1.5-1
-      - nginx
-    state: latest
+      - nginxnginx-1.12.2
+    state: present
 
 - name: Ensure custom nginx.conf exists
   copy:
