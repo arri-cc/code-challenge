@@ -2,7 +2,8 @@
     "variables": {
         "aws_access_key": "",
         "aws_secret_key": "",
-        "ami_version": "0.1.0"
+        "ami_version": "0.1.0",
+        "override_health_check": "no"
     },
     "builders": [
         {
@@ -39,8 +40,8 @@
         },
         {
             "type": "file",
-            "source": "../../src/webapp",
-            "destination": "/home/centos/webapp"
+            "source": "../../src/LuckyApp/LuckyApp",
+            "destination": "/home/centos/luckyapp"
         },
         {
             "type": "ansible-local",
@@ -48,7 +49,10 @@
             "role_paths": [
                 "../ansible/roles/web"
             ],
-            "playbook_dir": "../ansible"
+            "playbook_dir": "../ansible",
+            "extra_arguments": [
+                "--extra-vars \"override_health_check={{user `override_health_check`}}\""
+            ]
         }
     ]
 }
