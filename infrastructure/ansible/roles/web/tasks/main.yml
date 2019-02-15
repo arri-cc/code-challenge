@@ -16,7 +16,7 @@
     name:
       - dotnet-sdk-2.1-2.1.403-1
       - aspnetcore-runtime-2.1-2.1.5-1
-      - nginxnginx-1.12.2
+      - nginx-1.12.2
     state: present
 
 - name: Ensure custom nginx.conf exists
@@ -43,7 +43,7 @@
 
 - name: Ensure webapp is installed
   copy:
-    src: /home/centos/webapp-release
+    src: /home/centos/webapp-release/
     dest: /var/www/webapp/
     mode: 644
   notify: restart webapp.service
