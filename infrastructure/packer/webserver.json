@@ -1,0 +1,50 @@
+{
+    "variables": {
+        "aws_access_key": "",
+        "aws_secret_key": ""
+    },
+    "builders": [
+        {
+            "profile": "default",
+            "region": "us-west-1",
+            "type": "amazon-ebs",
+            "access_key": "{{user `aws_access_key`}}",
+            "secret_key": "{{user `aws_secret_key`}}",
+            "source_ami_filter": {
+                "filters": {
+                    "virtualization-type": "hvm",
+                    "product-code": "aw0evgkw8e5c1q413zgy5pjce",
+                    "root-device-type": "ebs"
+                },
+                "owners": [
+                    "679593333241"
+                ],
+                "most_recent": true
+            },
+            "instance_type": "t3.nano",
+            "ssh_username": "centos",
+            "ami_name": "luckyday-arri-packer-test {{isotime | clean_ami_name}}"
+        }
+    ],
+    "provisioners": [
+        {
+            "type": "shell",
+            "inline": [
+                "sudo yum install epel-release ansible -y"
+            ]
+        },
+        {
+            "type": "file",
+            "source": "../../src/webapp",
+            "destination": "/home/centos/webapp"
+        },
+        {
+            "type": "ansible-local",
+            "playbook_file": "../ansible/packer.yml",
+            "role_paths": [
+                "../ansible/roles/web"
+            ],
+            "playbook_dir": "../ansible"
+        }
+    ]
+}
