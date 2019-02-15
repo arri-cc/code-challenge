@@ -1,0 +1,71 @@
+---
+# tasks file for app-server
+
+- name: Ensure microsoft repository is installed
+  yum:
+    name: https://packages.microsoft.com/config/rhel/7/packages-microsoft-prod.rpm
+    state: present
+
+- name: Ensure epel-release is installed
+  yum:
+    name: epel-release
+    state: present
+
+- name: Ensure required app server packages are installed
+  yum:
+    name:
+      - dotnet-sdk-2.1
+      - aspnetcore-runtime-2.1-2.1.5-1
+      - nginx
+    state: latest
+
+- name: Ensure custom nginx.conf exists
+  copy:
+    src: "{{ role_path }}/files/nginx.conf"
+    dest: /etc/nginx/nginx.conf
+  notify: restart nginx
+
+- name: Ensure nginx is started and enabled
+  service:
+    name: nginx
+    state: started
+    enabled: yes
+
+- name: Ensure the dotnet core app is built
+  shell: dotnet publish /home/centos/webapp/webapp.csproj -c Release -o /home/centos/webapp-release
+
+- name: Ensure webapp directory exists
+  file:
+    path: /var/www/webapp
+    state: directory
+    owner: nginx
+    group: nginx
+
+- name: Ensure webapp is installed
+  copy:
+    src: /home/centos/webapp-release
+    dest: /var/www/webapp/
+    mode: 644
+  notify: restart webapp.service
+
+- name: Ensure web is configured as a service
+  copy:
+    src: "{{ role_path }}/files/webapp.service"
+    dest: /etc/systemd/system/webapp.service
+    mode: 644
+  notify: reload systemctl
+
+- name: Ensure webapp service is running
+  systemd:
+    name: webapp.service
+    state: started
+    enabled: true
+
+- name: Ensure httpd_can_network_connect flag is on and kept persistent across reboots so nginx works
+  seboolean:
+    name: httpd_can_network_connect
+    state: yes
+    persistent: yes
+
+
+

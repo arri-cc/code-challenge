@@ -1,0 +1,16 @@
+---
+- name: restart nginx
+  service:
+    name: nginx
+    state: restarted
+
+- name: reload nginx
+  service:
+    name: nginx
+    state: reloaded
+
+- name: reload systemctl
+  command: systemctl daemon-reload
+
+- name: restart webapp.service
+  command: systemctl restart webapp.service
