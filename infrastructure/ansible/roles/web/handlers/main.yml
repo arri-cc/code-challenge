@@ -12,5 +12,5 @@
 - name: reload systemctl
   command: systemctl daemon-reload
 
-- name: restart webapp.service
-  command: systemctl restart webapp.service
+- name: restart luckyapp.service
+  command: systemctl restart luckyapp.service

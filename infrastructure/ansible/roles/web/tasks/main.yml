@@ -31,33 +31,40 @@
     state: started
     enabled: yes
 
-- name: Ensure the dotnet core app is built
-  shell: dotnet publish /home/centos/webapp/webapp.csproj -c Release -o /home/centos/webapp-release
+- name: Ensure Health Check override if flag is present
+  replace:
+    path: /home/centos/luckyapp/appsettings.json
+    regexp: '"Health Checker: OK"'
+    replace: '"Another Health Checker: OK"'
+  when: 'override_health_check is defined and override_health_check == "yes"'
 
-- name: Ensure webapp directory exists
+- name: Ensure the dotnet core app is built
+  shell: dotnet publish /home/centos/luckyapp/LuckyApp.csproj -c Release -o /home/centos/luckyapp-release
+
+- name: Ensure luckyapp directory exists
   file:
-    path: /var/www/webapp
+    path: /var/www/luckyapp
     state: directory
     owner: nginx
     group: nginx
 
-- name: Ensure webapp is installed
+- name: Ensure luckyapp is installed
   copy:
-    src: /home/centos/webapp-release/
-    dest: /var/www/webapp/
+    src: /home/centos/luckyapp-release/
+    dest: /var/www/luckyapp/
     mode: 644
-  notify: restart webapp.service
+  notify: restart luckyapp.service
 
 - name: Ensure web is configured as a service
   copy:
-    src: "{{ role_path }}/files/webapp.service"
-    dest: /etc/systemd/system/webapp.service
+    src: "{{ role_path }}/files/luckyapp.service"
+    dest: /etc/systemd/system/luckyapp.service
     mode: 644
   notify: reload systemctl
 
-- name: Ensure webapp service is running
+- name: Ensure luckyapp service is running
   systemd:
-    name: webapp.service
+    name: luckyapp.service
     state: started
     enabled: true
 
