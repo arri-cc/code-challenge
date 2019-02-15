@@ -5,7 +5,7 @@ variable "fqdn" {
 
 variable "fqdn_app" {
   type    = "string"
-  default = "app.luckyday.arri.io"
+  default = "app2.luckyday.arri.io"
 }
 
 variable "fqdn_internal" {
@@ -70,4 +70,34 @@ variable "ec2_instance_type" {
 variable "ssh_public_key" {
   type    = "string"
   default = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDLlBfnNTlOU23fcbzxUOMQAWEw4jRx5fGrOLcVEdyby+o9UBDzC4KIQNNhqDvL2Hw7m+osvYuACxp7+nqNhqF5iljOo5UqbcqVjwaWOayBBh3Ehg/4B3LAIeLP44dTML7wH2xPvhY+KjpFiIjM3UARlya30N645zSvn6HsxthRNzViF6JXSuUaxc+Sjmg4+KfM5MYrwRVDtYp1IYXi1TlMDAu2NWwKFG8D8/X7XlIsnNsIx6ZlMgKmOxvrUci+QXkD3OJSMxZ8cubQmajE4ErI+CJ/7+rFbPPFodmWl6vcHAQHytQMGa1Nj7gjJgdlVZWH4bS+hLuRIBlnEUjRfEMF luckyday"
+}
+
+variable "s3_cdn_image_name" {
+  type    = "string"
+  default = "rick-astely.gif"
+}
+
+variable "s3_cdn_image_path" {
+  type    = "string"
+  default = "../../src/LuckyApp/LuckyApp/wwwroot/images/rick-astley.gif"
+}
+
+variable "asg_min" {
+  type    = "string"
+  default = "3"
+}
+
+variable "asg_max" {
+  type    = "string"
+  default = "6"
+}
+
+variable "asg_desired" {
+  type    = "string"
+  default = "3"
+}
+
+variable "asg_stack_name" {
+  type    = "string"
+  default = "my-luckyday-asg"
 }

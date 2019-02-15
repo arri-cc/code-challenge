@@ -19,7 +19,7 @@ resource "aws_subnet" "subnet" {
   depends_on = ["aws_vpc.vpc"]
 
   tags {
-    Name = "${format("%s.%s-%s", "subnet", element(var.aws_availability_zones, count.index), var.fqdn)}"
+    Name = "${format("%s.%s-%s", "subnet", element(var.aws_availability_zones, count.index), var.fqdn_app)}"
     App  = "${var.fqdn}"
   }
 }
@@ -29,7 +29,7 @@ resource "aws_internet_gateway" "gw" {
   depends_on = ["aws_vpc.vpc"]
 
   tags {
-    Name = "${format("%s.%s-%s", "gw", var.aws_region, var.fqdn)}"
+    Name = "${format("%s.%s-%s", "gw", var.aws_region, var.fqdn_app)}"
     App  = "${var.fqdn}"
   }
 }
@@ -45,7 +45,7 @@ resource "aws_route_table" "route_table" {
   depends_on = ["aws_vpc.vpc"]
 
   tags {
-    Name = "${format("%s.%s-%s", "routes", element(var.aws_availability_zones, count.index), var.fqdn)}"
+    Name = "${format("%s.%s-%s", "routes", element(var.aws_availability_zones, count.index), var.fqdn_app)}"
     App  = "${var.fqdn}"
   }
 }
@@ -113,7 +113,7 @@ resource "aws_security_group" "web" {
   depends_on = ["aws_vpc.vpc"]
 
   tags {
-    Name = "${format("%s.%s-%s", "websg", element(var.aws_availability_zones, count.index), var.fqdn)}"
+    Name = "${format("%s.%s-%s", "websg", element(var.aws_availability_zones, count.index), var.fqdn_app)}"
     App  = "${var.fqdn}"
   }
 }
@@ -123,7 +123,7 @@ resource "aws_vpc_dhcp_options" "dchp_options" {
   domain_name_servers = ["AmazonProvidedDNS"]
 
   tags {
-    Name = "${format("%s.%s-%s", "dchp-options", element(var.aws_availability_zones, count.index), var.fqdn)}"
+    Name = "${format("%s.%s-%s", "dchp-options", element(var.aws_availability_zones, count.index), var.fqdn_app)}"
     App  = "${var.fqdn}"
   }
 }

@@ -31,13 +31,6 @@ resource "aws_elb" "elb" {
   security_groups = ["${aws_security_group.web.id}"]
   subnets         = ["${aws_subnet.subnet.*.id}"]
 
-  /*
-                                    access_logs {
-                                      bucket        = "${var.aws_elb_logs["bucket"]}"
-                                      bucket_prefix = "${var.aws_elb_logs["path"]}"
-                                      interval      = 60
-                                    }
-                                  */
   listener {
     instance_port     = 80
     instance_protocol = "http"
@@ -67,18 +60,10 @@ resource "aws_elb" "elb" {
   connection_draining_timeout = 400
   cross_zone_load_balancing   = true
 
-  depends_on = ["aws_autoscaling_group.asg"]
-
   tags {
     Name = "${format("%s.%s", "elb", var.fqdn)}"
     App  = "${var.fqdn}"
   }
-}
-
-resource "aws_autoscaling_attachment" "asg_attachment" {
-  autoscaling_group_name = "${aws_autoscaling_group.asg.id}"
-  elb                    = "${aws_elb.elb.id}"
-  depends_on             = ["aws_elb.elb"]
 }
 
 resource "aws_route53_record" "web" {

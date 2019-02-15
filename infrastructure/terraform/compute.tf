@@ -16,7 +16,7 @@ resource "aws_key_pair" "ssh_key" {
 }
 
 resource "aws_launch_template" "template" {
-  name_prefix   = "luckyday-arri-launch"
+  name_prefix   = "${var.fqdn_app}-launch"
   image_id      = "${data.aws_ami.ami.id}"
   instance_type = "${var.ec2_instance_type}"
 
@@ -31,19 +31,44 @@ resource "aws_launch_template" "template" {
   }
 }
 
-resource "aws_autoscaling_group" "asg" {
-  #  availability_zones  = ["${var.aws_availability_zones}"]
-  desired_capacity    = 3
-  max_size            = 6
-  min_size            = 3
-  vpc_zone_identifier = ["${aws_subnet.subnet.*.id}"]
+resource "aws_cloudformation_stack" "asg" {
+  depends_on = ["aws_elb.elb"]
+  name       = "${var.asg_stack_name}"
 
-  launch_template {
-    id      = "${aws_launch_template.template.id}"
-    version = "$$Latest"
-  }
+  template_body = <<EOF
+Description: "web server asg"
+Resources:
+  ASG:
+    Type: AWS::AutoScaling::AutoScalingGroup
+    Properties:
+      VPCZoneIdentifier: ["${join("\",\"", aws_subnet.subnet.*.id)}"]
+      AvailabilityZones: ["${join("\",\"", var.aws_availability_zones)}"]
+      LaunchTemplate:
+        LaunchTemplateId : "${aws_launch_template.template.id}"
+       # LaunchTemplateName : "${aws_launch_template.template.name}"
+        Version : "${aws_launch_template.template.latest_version}"
+      MinSize: "${var.asg_min}"
+      MaxSize: "${var.asg_max}"
+      DesiredCapacity: "${var.asg_desired}"
+      HealthCheckType: EC2
+      LoadBalancerNames: ["${aws_elb.elb.name}"]
 
-  lifecycle {
-    create_before_destroy = true
-  }
+    UpdatePolicy:
+    # Ignore differences in group size properties caused by scheduled actions
+      AutoScalingScheduledAction:
+        IgnoreUnmodifiedGroupSizeProperties: true
+      AutoScalingRollingUpdate:
+        MaxBatchSize: 1
+        MinInstancesInService: 2
+        MinSuccessfulInstancesPercent: 80
+        PauseTime: PT10M
+        SuspendProcesses:
+          - HealthCheck
+          - ReplaceUnhealthy
+          - AZRebalance
+          - AlarmNotification
+          - ScheduledActions
+        WaitOnResourceSignals: true
+    DeletionPolicy: Retain
+  EOF
 }
