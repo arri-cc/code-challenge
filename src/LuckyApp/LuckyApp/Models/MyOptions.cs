@@ -1,5 +1,5 @@
 ﻿using System;
-namespace webapp.Models
+namespace LuckyApp.Models
 {
     public class MyOptions
     {
