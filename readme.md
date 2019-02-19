@@ -15,34 +15,54 @@ There are a few software and configuration requirements that must be met in orde
 
 ### Software
 
-| Software                                                     | Version | Purpose                                          |
-| ------------------------------------------------------------ | ------- | ------------------------------------------------ |
-| [Ansible](https://docs.ansible.com/ansible/2.5/installation_guide/intro_installation.html) | 2.7     | Automated configuration of the compute resources |
-| [Terraform](https://www.terraform.io/intro/getting-started/install.html) | 0.11.11 | Automated infrastructure orchestration           |
-| [dotnet core sdk](https://www.microsoft.com/net/download)    | 2.1.5   | To compile the sample application                |
+The following software should be installed on your workstation
+
+| Software                                                     | Version | Purpose                                                      |
+| ------------------------------------------------------------ | ------- | ------------------------------------------------------------ |
+| [Ansible](https://docs.ansible.com/ansible/2.5/installation_guide/intro_installation.html) | 2.7     | Automated configuration of the compute resources             |
+| [Packer](https://www.packer.io/downloads.html)               | 1.3.4   | Automated configuration of AMIs for application servers      |
+| [Terraform](https://www.terraform.io/intro/getting-started/install.html) | 0.11.11 | Automated infrastructure orchestration                       |
+| [dotnet core sdk](https://www.microsoft.com/net/download)    | 2.1.5   | To compile the sample application (for testing it locally if needed, otherwise this is compiled inside the AMI via packer/ansible) |
 
 ### AWS Resources
 
-- A Route53 DNS Zone 
-- An S3 Bucket to manage terraform state and logs
+In order to keep this project simple, the following global resources should be configured manually in AWS:
+
+| AWS Resource Type | Purpose                                                      |
+| ----------------- | ------------------------------------------------------------ |
+| S3 Bucket         | This will be used as a remote backend for Terraform state.   |
+| Route 53 DNS Zone | This will be the DNS Zone used to host the application and Terraform configuration will create the required records using the provided |
 
 ### Configuration
 
 To reduce the need to manage secrets, `AWS` and `ssh` credentials and keys are required to be installed in the standard user directories.
 
-- For the sake of simplicity, on your workstation an AWS credential file is expected here `~/.aws/credential` with the `default` profile configured to use the correct credentials for the target environment
-- An ssh key with a name and public key that matches what's configured in the Terraform variable `var.ssh_public_key` in the variables file `infrastructure/terraform/variables.tf` as well as the ansible playbook `infrastructure/ansible/aws.yml`.  For this example `~/.ssh/luckyday_id_rsa` and the contents of `~/.ssh/luckyday_id_rsa.pub` are used.
+#### AWS Authentication
+
+For the sake of simplicity, on your workstation an AWS credential file is expected here `~/.aws/credential` with the `default` profile configured to use the correct credentials for the target environment.  Ansible, Packer, and Terraform will use this file to authenticate.
+
+#### Terraform Variable Configuration
+
+While there are a variety of ways to provide configuration data, using a variables file is the easiest option.  The user variables that are unique for each environment need to be specified in a `terraform.tfvars` file.  The `terraform.tfvars.sample` is provided as a template.  Note: the `terraform.tfvars` is ignored by git.
+
+1. Make a copy of the sample file `cp terraform.tfvars.sample terraform.tfvars`
+2. Edit the file, providing values for all of the variables.
+
+#### Terraform S3 Backend Configuration
+
+1. Make a copy of the sample backend config file `cp backend.config.sample backend.config`
+2. Edit the new `backend.config` file with the values for your target s3 bucket and AWS region.
+3. Now initialize terraform: `terraform init --backend-config=backend.config`
 
 ## TL;DR;  How to run it
 
 Here's the steps to fully orchestrate and configure the solution, assuming all of the prerequisites have been met.
 
-1. Build and publish a new image: `cd infrastrastructure/packer && packer build -var ami_version=0.3.2 webserver.json`  _please note:_ the `ami_version` has to be unique, and specifying it here overrides the value in the `webserver.json` file, which is suitable for a CI/CD process.
-2. To configure the `s3 backend` for terraform, chand to the terraform directory and make a copy of the sample backend config file `cd ../terraform && cp backend.config.sample backend.config` and configure the values for the target s3 bucket and region.
-3. Now initialize terraform: `terraform init --backend-config=backend.config`
-4. Next create a terraform plan: `terraform plan -out aws.plan`
-5. After reviewing the plan, you can apply it to deploy the entire solution: `terraform apply aws.plan`
-6. Terraform will configure the infrastructure.
+1. Build and publish a new image via Packer: `cd infrastrastructure/packer && packer build -var ami_version=<semver> webserver.json`  replacing `<semver>` with the desired version number e.g. "0.1.0". 
+   - *Note*: For each image you publish the `ami_version` has to be unique, and specifying it here overrides the value in the `webserver.json` file, which is suitable for a CI/CD process.
+2. Next create a terraform plan: `cd ../terraform && terraform plan -out=aws.plan`
+3. After reviewing the plan, you can apply it to deploy the entire solution: `terraform apply aws.plan`
+4. Terraform will configure the infrastructure.
 
 You now have a fully configured, highly available web application.
 
@@ -60,7 +80,7 @@ I'd like to provide more informations on the choices I made while performing thi
 - 1 AWS Internet Gateway for the VPC
 - 1 AWS ELB for load balancing across instances
 - 1 VPC with 3 subnets, each in a different availability zone
-- 3 AWS Instances, each deployed to different availability zones via an Auto Scaling Group
+- 3 EC2 Instances, each deployed to different availability zones via an Auto Scaling Group
 
 Subnets:
 

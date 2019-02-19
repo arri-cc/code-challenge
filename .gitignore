@@ -333,6 +333,7 @@ ASALocalRun/
 .terraform/
 backend.config
 *.plan
+terraform.tfvars
 
 #ansible
 pwd_file

@@ -60,7 +60,7 @@ Resources:
       AutoScalingRollingUpdate:
         MaxBatchSize: 1
         MinInstancesInService: 2
-        MinSuccessfulInstancesPercent: 80
+        MinSuccessfulInstancesPercent: 33
         PauseTime: PT10M
         SuspendProcesses:
           - HealthCheck
@@ -68,7 +68,7 @@ Resources:
           - AZRebalance
           - AlarmNotification
           - ScheduledActions
-        WaitOnResourceSignals: true
+        WaitOnResourceSignals: no
     DeletionPolicy: Retain
   EOF
 }

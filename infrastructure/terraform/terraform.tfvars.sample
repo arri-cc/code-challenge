@@ -1,0 +1,46 @@
+# identifies Route53 DNS Zone e.g. "example.com"
+fqdn = ""
+
+# subdomain to use for the app e.g. "app.example.com"
+fqdn_app = ""
+
+# internal dns domain for VPC e.g. "example.internal"
+fqdn_internal = ""
+
+# used for tagging resources
+suffix = ""
+
+# target aws region e.g. "us-east-1"
+aws_region = ""
+
+# list of target aws availability zones e.g.
+/*
+aws_availability_zones = [
+  "us-east-1a",
+  "us-east-1b",
+  "us-east-1c",
+]
+*/
+aws_availability_zones = []
+
+# s3 settings for storing elb logs
+/*
+aws_elb_logs = {
+    bucket = "bucket-name"
+    path   = "path/to/object"
+  }
+*/
+aws_elb_logs = {
+  bucket = ""
+  path   = ""
+}
+
+# aws ec2 instance type for ASG e.g. "t3.nano"
+ec2_instance_type = ""
+
+# your desired ssh public key to use for authentication with ec2 instances,
+# e.g. the output of "cat ~/.ssh/id_rsa.pub" if you have a default key
+ssh_public_key = ""
+
+# name of the ASG CloudFormation stack that matches ([a-zA-Z][-a-zA-Z0-9]*)|(arn:aws:[-a-zA-Z0-9:/._+]*) e.g. "my-lucky-asg"
+asg_stack_name = ""
