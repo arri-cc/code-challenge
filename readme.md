@@ -66,6 +66,11 @@ Here's the steps to fully orchestrate and configure the solution, assuming all o
 
 You now have a fully configured, highly available web application.
 
+#### To teardown the infrastructure:
+
+1. run `terraform destroy` and approve the plan.
+2. Delete the S3 bucket and Route53 zone.
+
 ## A breakdown of how each goal was accomplished
 
 I'd like to provide more informations on the choices I made while performing this work.
