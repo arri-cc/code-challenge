@@ -20,12 +20,14 @@ resource "aws_launch_template" "template" {
   image_id      = "${data.aws_ami.ami.id}"
   instance_type = "${var.ec2_instance_type}"
 
-  #vpc_security_group_ids = ["${aws_security_group.web.id}"]
-
   network_interfaces {
     associate_public_ip_address = true
     security_groups             = ["${aws_security_group.web.id}"]
+
+    #set to true to avoid orphaned ENIs that prevent terraform destroy from completing
+    delete_on_termination = true
   }
+
   lifecycle {
     create_before_destroy = true
   }
