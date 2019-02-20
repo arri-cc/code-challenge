@@ -32,8 +32,9 @@ resource "aws_launch_template" "template" {
 }
 
 resource "aws_cloudformation_stack" "asg" {
-  depends_on = ["aws_elb.elb"]
-  name       = "${var.asg_stack_name}"
+  depends_on         = ["aws_elb.elb"]
+  name               = "${var.asg_stack_name}"
+  timeout_in_minutes = 30
 
   template_body = <<EOF
 Description: "web server asg"
@@ -43,9 +44,9 @@ Resources:
     Properties:
       VPCZoneIdentifier: ["${join("\",\"", aws_subnet.subnet.*.id)}"]
       AvailabilityZones: ["${join("\",\"", var.aws_availability_zones)}"]
+      Cooldown: "30"
       LaunchTemplate:
         LaunchTemplateId : "${aws_launch_template.template.id}"
-       # LaunchTemplateName : "${aws_launch_template.template.name}"
         Version : "${aws_launch_template.template.latest_version}"
       MinSize: "${var.asg_min}"
       MaxSize: "${var.asg_max}"
@@ -58,9 +59,8 @@ Resources:
       AutoScalingScheduledAction:
         IgnoreUnmodifiedGroupSizeProperties: true
       AutoScalingRollingUpdate:
-        MaxBatchSize: 1
-        MinInstancesInService: 2
-        MinSuccessfulInstancesPercent: 33
+        MaxBatchSize: 3
+        MinInstancesInService: 3
         PauseTime: PT10M
         SuspendProcesses:
           - HealthCheck
@@ -69,6 +69,6 @@ Resources:
           - AlarmNotification
           - ScheduledActions
         WaitOnResourceSignals: no
-    DeletionPolicy: Retain
+    DeletionPolicy: Delete
   EOF
 }
