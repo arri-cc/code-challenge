@@ -1,6 +1,4 @@
-#### AWS Authentication
-
-For the sake of simplicity, on your workstation an AWS credential file is expected here `~/.aws/credential` with the `default` profile configured to use the correct credentials for the target environment.  Ansible, Packer, and Terraform will use this file to authenticate.Description
+## Description
 
 This project provides a solution for the `ops` code challenge by Lucky Day.  I set out to solve the following challenges:
 
@@ -39,8 +37,6 @@ In order to keep this project simple, the following global resources should be c
 #### AWS Authentication
 
 For the sake of simplicity, on your workstation an AWS credential file is expected here `~/.aws/credential` with the `default` profile configured to use the correct credentials for the target environment.  Ansible, Packer, and Terraform will use this file to authenticate.
-
-
 
 ### TL;DR; Quick Deployment and Teardown with Scripts
 
