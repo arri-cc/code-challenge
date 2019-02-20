@@ -47,7 +47,7 @@ The below steps will deploy the default app, perform a rolling update with the a
 1. Open the build directory in your shell `cd build`
 2. Run the default deployment option with the following command:`./deployWithDefaults.sh "<version>"` .
 3. When ready to test updates can deploy the alternate health message: `./deployWithOverrides.sh "<version>"`
-4. At the end of the test, run the following command to cleanup the resources `./build/destroy.sh`
+4. At the end of the test, run the following command to cleanup the resources `./destroy.sh`
 
 ### How to deploy manually
 
