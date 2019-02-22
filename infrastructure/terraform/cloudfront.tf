@@ -22,7 +22,7 @@ resource "aws_cloudfront_distribution" "images_cdn" {
   provider   = "aws.useast1"
   depends_on = ["aws_acm_certificate.cert_cdn"]
 
-  ter origin {
+  origin {
     domain_name = "${aws_s3_bucket.s3_cdn.bucket_regional_domain_name}"
     origin_id   = "${aws_s3_bucket.s3_cdn.id}"
   }
