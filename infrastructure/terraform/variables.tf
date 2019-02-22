@@ -6,6 +6,10 @@ variable "fqdn_app" {
   type = "string"
 }
 
+variable "fqdn_cdn" {
+  type = "string"
+}
+
 variable "fqdn_internal" {
   type = "string"
 }
@@ -16,6 +20,22 @@ variable "suffix" {
 
 variable "aws_region" {
   type = "string"
+}
+
+variable "aws_s3_bucket_for_cdn" {
+  type = "string"
+}
+
+variable aws_s3_bucket_for_cdn_acl {
+  type = "string"
+}
+
+variable "cdn_images" {
+  type = "map"
+
+  default = {
+    "/images/rick-astley.gif" = "../../src/LuckyApp/LuckyApp/wwwroot/images/rick-astely.gif"
+  }
 }
 
 variable "aws_availability_zones" {
