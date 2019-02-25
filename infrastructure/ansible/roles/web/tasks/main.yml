@@ -38,6 +38,13 @@
     replace: '"Another Health Checker: OK"'
   when: 'override_health_check is defined and override_health_check == "yes"'
 
+- name: Ensure CDN base url is configured when present
+  replace:
+    path: /home/centos/luckyapp/appsettings.json
+    regexp: "/images"
+    replace: "//{{ cdn_host }}/images"
+  when: 'cdn_host is defined and cdn_host != ""'
+
 - name: Ensure the dotnet core app is built
   shell: dotnet publish /home/centos/luckyapp/LuckyApp.csproj -c Release -o /home/centos/luckyapp-release
 

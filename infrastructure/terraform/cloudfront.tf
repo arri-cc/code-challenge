@@ -1,26 +1,36 @@
 resource "aws_s3_bucket" "s3_cdn" {
-  provider = "aws.useast1"
-  bucket   = "${var.aws_s3_bucket_for_cdn}"
-  acl      = "${var.aws_s3_bucket_for_cdn_acl}"
+  provider      = "aws.useast1"
+  bucket        = "${var.aws_s3_bucket_for_cdn}"
+  acl           = "${var.aws_s3_bucket_for_cdn_acl}"
+  force_destroy = true
 
   tags {
     Environment = "${var.fqdn_app}"
   }
 }
 
-resource "aws_s3_bucket_object" "object" {
+resource "aws_s3_bucket_object" "logs_cdn" {
   provider = "aws.useast1"
-  count    = "${length(var.cdn_images)}"
   bucket   = "${aws_s3_bucket.s3_cdn.id}"
-  key      = "${element(keys(var.cdn_images), count.index)}"
-  source   = "${var.cdn_images[element(keys(var.cdn_images), count.index)]}"
-  etag     = "${md5(file(var.cdn_images[element(keys(var.cdn_images), count.index)]))}"
+  key      = "${var.logs_cdn}"
+  source   = "/dev/null"
+  etag     = "${md5(file("/dev/null"))}"
   acl      = "public-read"
 }
 
-resource "aws_cloudfront_distribution" "images_cdn" {
+resource "aws_s3_bucket_object" "content_for_cdn" {
+  provider = "aws.useast1"
+  count    = "${length(var.content_for_cdn)}"
+  bucket   = "${aws_s3_bucket.s3_cdn.id}"
+  key      = "${element(keys(var.content_for_cdn), count.index)}"
+  source   = "${var.content_for_cdn[element(keys(var.content_for_cdn), count.index)]}"
+  etag     = "${md5(file(var.content_for_cdn[element(keys(var.content_for_cdn), count.index)]))}"
+  acl      = "public-read"
+}
+
+resource "aws_cloudfront_distribution" "content_cdn" {
   provider   = "aws.useast1"
-  depends_on = ["aws_acm_certificate.cert_cdn"]
+  depends_on = ["aws_acm_certificate.cert_cdn", "aws_s3_bucket_object.cdn_logs"]
 
   origin {
     domain_name = "${aws_s3_bucket.s3_cdn.bucket_regional_domain_name}"
@@ -33,7 +43,7 @@ resource "aws_cloudfront_distribution" "images_cdn" {
   logging_config {
     include_cookies = false
     bucket          = "${aws_s3_bucket.s3_cdn.bucket_domain_name}"
-    prefix          = "cloudfrontlogs"
+    prefix          = "${var.logs_cdn}"
   }
 
   aliases = ["${var.fqdn_cdn}"]
@@ -130,8 +140,8 @@ resource "aws_route53_record" "cdn" {
   type     = "A"
 
   alias {
-    name                   = "${aws_cloudfront_distribution.images_cdn.domain_name}"
-    zone_id                = "${aws_cloudfront_distribution.images_cdn.hosted_zone_id}"
+    name                   = "${aws_cloudfront_distribution.content_cdn.domain_name}"
+    zone_id                = "${aws_cloudfront_distribution.content_cdn.hosted_zone_id}"
     evaluate_target_health = false
   }
 }

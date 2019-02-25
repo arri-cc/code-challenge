@@ -17,21 +17,21 @@ There are a few software and configuration requirements that must be met in orde
 
 The following software should be installed on your workstation
 
-| Software                                                     | Version            | Purpose                                                      |
-| ------------------------------------------------------------ | ------------------ | ------------------------------------------------------------ |
-| [Ansible](https://docs.ansible.com/ansible/2.5/installation_guide/intro_installation.html) | 2.7                | Automated configuration of the compute resources             |
-| [Packer](https://www.packer.io/downloads.html)               | 1.3.4              | Automated configuration of AMIs for application servers      |
-| [Terraform](https://www.terraform.io/intro/getting-started/install.html) | 0.11.11            | Automated infrastructure orchestration                       |
-| [dotnet core sdk](https://www.microsoft.com/net/download)    | 2.1.5              | To compile the sample application (for testing it locally if needed, otherwise this is compiled inside the AMI via packer/ansible) |
-| vim                                                          | any recent version | used in the deploy scripts to edit any missing config files  |
+| Software                                                                                   | Version            | Purpose                                                                                                                            |
+| ------------------------------------------------------------------------------------------ | ------------------ | ---------------------------------------------------------------------------------------------------------------------------------- |
+| [Ansible](https://docs.ansible.com/ansible/2.5/installation_guide/intro_installation.html) | 2.7                | Automated configuration of the compute resources                                                                                   |
+| [Packer](https://www.packer.io/downloads.html)                                             | 1.3.4              | Automated configuration of AMIs for application servers                                                                            |
+| [Terraform](https://www.terraform.io/intro/getting-started/install.html)                   | 0.11.11            | Automated infrastructure orchestration                                                                                             |
+| [dotnet core sdk](https://www.microsoft.com/net/download)                                  | 2.1.5              | To compile the sample application (for testing it locally if needed, otherwise this is compiled inside the AMI via packer/ansible) |
+| vim                                                                                        | any recent version | used in the deploy scripts to edit any missing config files                                                                        |
 
 ### AWS Resources
 
 In order to keep this project simple, the following global resources should be configured manually in AWS:
 
-| AWS Resource Type | Purpose                                                      |
-| ----------------- | ------------------------------------------------------------ |
-| S3 Bucket         | This will be used as a remote backend for Terraform state.   |
+| AWS Resource Type | Purpose                                                                                                                                |
+| ----------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| S3 Bucket         | This will be used as a remote backend for Terraform state.                                                                             |
 | Route 53 DNS Zone | This will be the DNS Zone used to host the application and Terraform configuration will create the required records using the provided |
 
 #### AWS Authentication
@@ -45,8 +45,8 @@ To enable easier testing, I've provided a set of scripts to make setup and teard
 The below steps will deploy the default app, perform a rolling update with the alternative text, and then destroy the resources.
 
 1. Open the build directory in your shell `cd build`
-2. Run the default deployment option with the following command:`./deployWithDefaults.sh "<version>"` .
-3. When ready to test updates can deploy the alternate health message: `./deployWithOverrides.sh "<version>"`
+2. Run the default deployment option with the following command:`./deployWithDefaults.sh "<version>" "<cdn_host>"` .
+3. When ready to test updates can deploy the alternate health message: `./deployWithOverrides.sh "<version>" "<cdn_host>`
 4. At the end of the test, run the following command to cleanup the resources `./destroy.sh`
 
 ### How to deploy manually
