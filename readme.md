@@ -5,6 +5,7 @@ This project provides a solution for the `ops` code challenge by Lucky Day.  I s
 - Orchestrate an HA cloud infrastructure in AWS with Terraform
 - Configure the immutable AMIs with Ansible
 - Configure and enforce SSL via an Elastic Load Balancer
+- Configure CDN hosting for images via CloudFront
 - Provide a simple way to configure and deploy new versions of the app without downtime, to include swapping the health check message.
 
 
@@ -17,21 +18,21 @@ There are a few software and configuration requirements that must be met in orde
 
 The following software should be installed on your workstation
 
-| Software                                                     | Version            | Purpose                                                      |
-| ------------------------------------------------------------ | ------------------ | ------------------------------------------------------------ |
-| [Ansible](https://docs.ansible.com/ansible/2.5/installation_guide/intro_installation.html) | 2.7                | Automated configuration of the compute resources             |
-| [Packer](https://www.packer.io/downloads.html)               | 1.3.4              | Automated configuration of AMIs for application servers      |
-| [Terraform](https://www.terraform.io/intro/getting-started/install.html) | 0.11.11            | Automated infrastructure orchestration                       |
-| [dotnet core sdk](https://www.microsoft.com/net/download)    | 2.1.5              | To compile the sample application (for testing it locally if needed, otherwise this is compiled inside the AMI via packer/ansible) |
-| vim                                                          | any recent version | used in the deploy scripts to edit any missing config files  |
+| Software                                                                                   | Version            | Purpose                                                                                                                            |
+| ------------------------------------------------------------------------------------------ | ------------------ | ---------------------------------------------------------------------------------------------------------------------------------- |
+| [Ansible](https://docs.ansible.com/ansible/2.5/installation_guide/intro_installation.html) | 2.7                | Automated configuration of the compute resources                                                                                   |
+| [Packer](https://www.packer.io/downloads.html)                                             | 1.3.4              | Automated configuration of AMIs for application servers                                                                            |
+| [Terraform](https://www.terraform.io/intro/getting-started/install.html)                   | 0.11.11            | Automated infrastructure orchestration                                                                                             |
+| [dotnet core sdk](https://www.microsoft.com/net/download)                                  | 2.1.5              | To compile the sample application (for testing it locally if needed, otherwise this is compiled inside the AMI via packer/ansible) |
+| vim                                                                                        | any recent version | used in the deploy scripts to edit any missing config files                                                                        |
 
 ### AWS Resources
 
 In order to keep this project simple, the following global resources should be configured manually in AWS:
 
-| AWS Resource Type | Purpose                                                      |
-| ----------------- | ------------------------------------------------------------ |
-| S3 Bucket         | This will be used as a remote backend for Terraform state.   |
+| AWS Resource Type | Purpose                                                                                                                                |
+| ----------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| S3 Bucket         | This will be used as a remote backend for Terraform state.                                                                             |
 | Route 53 DNS Zone | This will be the DNS Zone used to host the application and Terraform configuration will create the required records using the provided |
 
 #### AWS Authentication
@@ -40,13 +41,13 @@ For the sake of simplicity, on your workstation an AWS credential file is expect
 
 ### TL;DR; Quick Deployment and Teardown with Scripts
 
-To enable easier testing, I've provided a set of scripts to make setup and teardown easy.  You will be prompted to provide any missing configuration settings.  In the instructions below the value `<version>` should be replaced with unique text to name the AMI created by Packer.  An easy convention is to use a build number e.g. 0.1.0, and increment it each time you perform a full deployment to ensure uniqueness.
+To enable easier testing, I've provided a set of scripts to make setup and teardown easy.  You will be prompted to provide any missing configuration settings.  In the instructions below the value `<version>` should be replaced with unique text to name the AMI created by Packer.  An easy convention is to use a build number e.g. 0.1.0, and increment it each time you perform a full deployment to ensure uniqueness.  The value `<cdn_host>` is the fqdn used for the custom `CloudFront`domain.
 
 The below steps will deploy the default app, perform a rolling update with the alternative text, and then destroy the resources.
 
 1. Open the build directory in your shell `cd build`
-2. Run the default deployment option with the following command:`./deployWithDefaults.sh "<version>"` .
-3. When ready to test updates can deploy the alternate health message: `./deployWithOverrides.sh "<version>"`
+2. Run the default deployment option with the following command:`./deployWithDefaults.sh "<version>" "<cdn_host>"` .
+3. When ready to test updates can deploy the alternate health message: `./deployWithOverrides.sh "<version>" "<cdn_host>"`
 4. At the end of the test, run the following command to cleanup the resources `./destroy.sh`
 
 ### How to deploy manually
@@ -98,6 +99,7 @@ I'd like to provide more informations on the choices I made while performing thi
 - 1 AWS Internet Gateway for the VPC
 - 1 AWS ELB for load balancing across instances
 - 1 VPC with 3 subnets, each in a different availability zone
+- 1 CloudFront distribution to an S3 bucket, restricted to us-east-1 based on availability of certain CloudFront features
 - 3 EC2 Instances, each deployed to different availability zones via an Auto Scaling Group
 
 Subnets:
@@ -129,11 +131,6 @@ Key aspects:
 
 I've provided the following scripts that will build a new image and allows an override of the default health check text via a configuration value.
 
-- `build/deployWithDefaults.sh`
-- `build/deployWithOverride.sh`
-
-### A couple things I didn't have time to do
-
-- configure scaling policies for the ASG
-- configure s3 and a CloudFront distribution for an image
+- `build/deployWithDefaults.sh "<version>" "<cdn_host>"`
+- `build/deployWithOverride.sh "<version>" "<cdn_host>"`
 

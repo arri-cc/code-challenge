@@ -3,7 +3,8 @@
         "aws_access_key": "",
         "aws_secret_key": "",
         "ami_version": "0.1.0",
-        "override_health_check": "no"
+        "override_health_check": "no",
+        "cdn_host": ""
     },
     "builders": [
         {
@@ -51,7 +52,7 @@
             ],
             "playbook_dir": "../ansible",
             "extra_arguments": [
-                "--extra-vars \"override_health_check={{user `override_health_check`}}\""
+                "--extra-vars \"override_health_check={{user `override_health_check`}} cdn_host={{user `cdn_host`}}\""
             ]
         }
     ]

@@ -2,26 +2,116 @@
 
 <html>
     <head>
-            <link href="//fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+        <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/foundation/6.5.3/css/foundation.min.css">
+        <link href="//fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+        <style type="text/css">
+            body {
+                font-family: 'Roboto', sans-serif;
+                background-color: #272822;
+                color: #66D9EF;
+            }
 
-            <style type="text/css">
-                body {
-                    font-family: 'Roboto', sans-serif;
-                    background-color: #272822;
-                    color: #66D9EF;
-                }
+            .card {
+                width: 250px;
+                top: 25%;
+            }
 
-                .centered {
-                    position: fixed;
-                    top: 50%;
-                    left: 50%;
-                    transform: translate(-50%, -50%);
-                }
+            .card-product-hover-title {
+                font-size: 1.4rem;
+                font-weight: 400;
+                margin-bottom: 0.2rem;
+            }
 
-            </style>
+            .card-product-hover {
+                position: relative;
+                line-height: 1.2rem;
+                transition: all 0.35s ease;
+            }
 
-        </head>
+            .card-product-hover-details {
+                -webkit-flex: 1 0 auto;
+                -ms-flex: 1 0 auto;
+                flex: 1 0 auto;
+                padding: 1rem;
+            }
+
+            .card-product-hover-details> :last-child {
+                margin-bottom: 0;
+            }
+
+            .card-product-hover-icons {
+                position: absolute;
+                top: 0;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                padding: 0.5rem;
+                display: -webkit-flex;
+                display: -ms-flexbox;
+                display: flex;
+                -webkit-flex-direction: column;
+                -ms-flex-direction: column;
+                flex-direction: column;
+                -webkit-justify-content: flex-start;
+                -ms-flex-pack: start;
+                justify-content: flex-start;
+            }
+
+            .card-product-hover-icons a i {
+                display: block;
+                font-size: 1.5rem;
+                line-height: 2.5rem;
+                width: 2.5rem;
+                background-color: #fefefe;
+                text-align: center;
+                color: #0a0a0a;
+            }
+
+            .card-product-hover-icons a i:hover {
+                background-color: #8a8a8a;
+                color: #fefefe;
+                cursor: pointer;
+            }
+
+            .card-product-hover-icons a {
+                margin: 2px;
+                opacity: 0;
+                -webkit-transform: translateY(50%);
+                -ms-transform: translateY(50%);
+                transform: translateY(50%);
+                transition: all 0.35s ease;
+            }
+
+            .card-product-hover:hover a,
+            .card-product-hover.hover a {
+                transition: all 0.35s ease;
+                opacity: 1;
+                -webkit-transform: translateX(0);
+                -ms-transform: translateX(0);
+                transform: translateX(0);
+            }
+
+            .card-product-hover:hover a:nth-child(2),
+            .card-product-hover.hover a:nth-child(2) {
+                transition-delay: 0.1s;
+            }
+
+            .card-product-hover:hover a:nth-child(3),
+            .card-product-hover.hover a:nth-child(3) {
+                transition-delay: 0.2s;
+            }
+            .card-product-hover-message {
+                color: green;
+            }
+        </style>
+    </head>
     <body>
-        <h1 class="centered">@Model.MachineName @Model.HealthCheckMsg</h1>
+        <div class="card card-product-hover float-center clearfix float-middle">
+            <img src="@Model.CdnHost/rickroll.gif" alt="Rick Roll" />
+            <div class="card-product-hover-details">
+                <h4 class="card-product-hover-title">@Model.MachineName</h4>
+                <span class="card-product-hover-message">@Model.HealthCheckMsg</span>
+            </div>
+        </div>
     </body>
 </html>

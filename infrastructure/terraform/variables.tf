@@ -1,38 +1,87 @@
 variable "fqdn" {
-  type = "string"
+  description = "FQDN for the DNS Zone in Route53"
+  type        = "string"
 }
 
 variable "fqdn_app" {
-  type = "string"
+  description = "FQDN for the app, for this project it's a subdomain in the DNS Zone"
+  type        = "string"
+}
+
+variable "fqdn_cdn" {
+  description = "FQDN for the custom CDN URL"
+  type        = "string"
 }
 
 variable "fqdn_internal" {
-  type = "string"
+  description = "FQDN for private DNS within the VPC"
+  type        = "string"
 }
 
 variable "suffix" {
-  type = "string"
+  description = "metadata to tag resources"
+  type        = "string"
 }
 
 variable "aws_region" {
-  type = "string"
+  description = "default region for most operations"
+  type        = "string"
+}
+
+variable "aws_s3_bucket_for_cdn" {
+  description = "name of the s3 bucket used for CDN distributions"
+  type        = "string"
+}
+
+variable aws_s3_bucket_for_cdn_acl {
+  description = "The ACL for the s3 bucket used for CDN distribution"
+  type        = "string"
+}
+
+variable aws_s3_bucket_for_cdn_content_acl {
+  description = "The ACL for the s3 objects within the s3 bucket for CDN distribution"
+  type        = "string"
+}
+
+variable "content_for_cdn" {
+  description = "Content for distribution via CDN"
+  type        = "map"
+
+  default = {
+    "/images/rickroll.gif" = "../../src/LuckyApp/LuckyApp/wwwroot/images/rickroll.gif"
+  }
+}
+
+variable "logs_cdn" {
+  description = "prefix for cdn logs"
+  type        = "string"
+  default     = "cloudfrontlogs"
 }
 
 variable "aws_availability_zones" {
-  type = "list"
+  description = "List of target availability zones"
+  type        = "list"
 }
 
 variable "aws_elb_logs" {
-  type = "map"
+  description = "ELB log configuration"
+  type        = "map"
 }
 
 variable "vpc_network_cidr_block" {
-  type    = "string"
-  default = "10.10.220.0/24"
+  description = "Defines the entire IP Address block for the VPC"
+  type        = "string"
+  default     = "10.10.220.0/24"
+}
+
+variable "replica_count" {
+  description = "number of instances, used for other resources like subnets"
+  type        = "string"
 }
 
 variable "vpc_network_subnet_cidr_blocks" {
-  type = "list"
+  description = "Defines the IP Address blocks for each subnet"
+  type        = "list"
 
   default = [
     "10.10.220.0/26",
@@ -41,34 +90,35 @@ variable "vpc_network_subnet_cidr_blocks" {
   ]
 }
 
-variable "replica_count" {
-  type    = "string"
-  default = "3"
-}
-
 variable "ec2_instance_type" {
-  type = "string"
+  description = "The desired EC2 instance type"
+  type        = "string"
 }
 
 variable "ssh_public_key" {
-  type = "string"
+  description = "The SSH public key to authenticate against each EC2 instance"
+  type        = "string"
 }
 
 variable "asg_min" {
-  type    = "string"
-  default = "3"
+  description = "The minimum number of EC2 instances in the Auto-Scaling Group"
+  type        = "string"
+  default     = "3"
 }
 
 variable "asg_max" {
-  type    = "string"
-  default = "6"
+  description = "The maximum number of EC2 instances in the Auto-Scaling Group"
+  type        = "string"
+  default     = "6"
 }
 
 variable "asg_desired" {
-  type    = "string"
-  default = "3"
+  description = "The desired number of EC2 instances in the Auto-Scaling Group"
+  type        = "string"
+  default     = "3"
 }
 
 variable "asg_stack_name" {
-  type = "string"
+  description = "The unique name for the Auto-Scaling Group CloudFormation stack"
+  type        = "string"
 }
