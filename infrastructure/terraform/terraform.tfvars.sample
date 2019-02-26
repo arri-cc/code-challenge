@@ -7,6 +7,18 @@ fqdn_app = ""
 # internal dns domain for VPC e.g. "example.internal"
 fqdn_internal = ""
 
+# used as the custom domain for CloudFront e.g. content.example.com
+fqdn_cdn = ""
+
+# terraform creates this bucket as the source of images for CloudFront, separate storage from bucket used for terraform
+aws_s3_bucket_for_cdn = ""
+
+# acl for cdn s3 bucket e.g. private or public-read
+aws_s3_bucket_for_cdn_acl = ""
+
+# acl for cdn accessible content e.g. private or public-read
+aws_s3_bucket_for_cdn_content_acl = ""
+
 # used for tagging resources
 suffix = ""
 
@@ -22,6 +34,9 @@ aws_availability_zones = [
 ]
 */
 aws_availability_zones = []
+
+#used to determine number of subnets
+replica_count = ""
 
 # s3 settings for storing elb logs
 /*

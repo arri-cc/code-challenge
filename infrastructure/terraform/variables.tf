@@ -48,7 +48,7 @@ variable "content_for_cdn" {
   type        = "map"
 
   default = {
-    "/images/rick-astley.gif" = "../../src/LuckyApp/LuckyApp/wwwroot/images/rick-astely.gif"
+    "/images/rickroll.gif" = "../../src/LuckyApp/LuckyApp/wwwroot/images/rickroll.gif"
   }
 }
 

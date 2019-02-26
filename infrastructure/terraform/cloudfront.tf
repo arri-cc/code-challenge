@@ -30,7 +30,7 @@ resource "aws_s3_bucket_object" "content_for_cdn" {
 
 resource "aws_cloudfront_distribution" "content_cdn" {
   provider   = "aws.useast1"
-  depends_on = ["aws_acm_certificate.cert_cdn", "aws_s3_bucket_object.cdn_logs"]
+  depends_on = ["aws_acm_certificate.cert_cdn", "aws_s3_bucket_object.logs_cdn"]
 
   origin {
     domain_name = "${aws_s3_bucket.s3_cdn.bucket_regional_domain_name}"
